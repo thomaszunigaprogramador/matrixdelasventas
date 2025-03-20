@@ -1,0 +1,383 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe de Ventas Actualizado</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        input, select {
+            padding: 10px;
+            margin: 5px;
+            width: calc(100% - 22px);
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        #supervisor-content, #vendedor-content, #form-venta, #password-modal {
+            display: none;
+            margin-top: 20px;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #bienvenida {
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #bienvenida h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #2c3e50;
+        }
+        #bienvenida p {
+            margin: 0;
+            font-size: 18px;
+            color: #7f8c8d;
+        }
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+<div id="bienvenida">
+    <button onclick="toggleChat()" style="margin-bottom: 10px;">Chat</button>
+    <h1>Bienvenidos Sayayines</h1>
+    <p>Selecciona tu rol:</p>
+    <div id="chat-container" style="width: 300px; margin-top: 20px; display: none;">
+        <h3>Chat</h3>
+        <label for="ejecutivo-select">Selecciona el Ejecutivo:</label>
+        <select id="ejecutivo-select" style="width: 80%; margin-bottom: 10px;">
+    <option value="Esteban Aravena">Esteban Aravena</option>
+    <option value="Rodrigo Moreno">Rodrigo Moreno</option>
+            
+            <option value="Diego Fuentealba">Diego Fuentealba</option>
+    <option value="Alen Laferte">Alen Laferte</option>
+    <option value="Benjamin Pinto">Benjamin Pinto</option>
+    <option value="Thomas Zuñiga">Thomas Zuñiga</option>
+        <option value="ADT">ADT</option>
+            <option value="ADT">ADT</option>
+    </select>
+        <div id="chat-box" style="height: 200px; overflow-y: auto; background-color: #eee; padding: 10px; margin-bottom: 10px; border-radius: 5px;"></div>
+        <input type="text" id="chat-message" placeholder="Escribe un mensaje" style="width: 80%;">
+        <button onclick="enviarMensaje()">Enviar</button>
+
+    </div>
+    <button onclick="activarVendedor()">Vendedor</button>
+    <button onclick="activarModoSupervisor()">Supervisor</button>
+</div>
+
+<div id="password-modal">
+    <h3>Ingrese la contraseña de supervisor:</h3>
+    <input type="password" id="password-supervisor" placeholder="Contraseña"><br><br>
+    <button onclick="verificarPasswordSupervisor()">Aceptar</button>
+    <button onclick="cerrarPasswordModal()">Cancelar</button>
+</div>
+
+<div id="supervisor-content">
+    <h2>Bienvenido Rodrigo Moreno</h2>
+    <button onclick="cerrarSupervisor()">Salir</button>
+    <h3>Ventas Registradas</h3>
+    <p>Total Instaladas: <span id="total-instaladas">0</span></p>
+    <p>Total Rechazadas: <span id="total-rechazadas">0</span></p>
+    <table id="tabla-ventas-supervisor">
+        <thead>
+            <tr>
+                <th>Fecha de Venta</th>
+<th>Fecha de Instalación</th>
+<th>Compañía</th>
+<th>Servicios</th>
+<th>Estado</th>
+<th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-ventas-supervisor-body"></tbody>
+    </table>
+</div>
+
+<div id="vendedor-content">
+    <h2>Iniciar Sesión Vendedor</h2>
+    <label for="nombre-vendedor">Nombre del Vendedor:</label>
+    <input type="text" id="nombre-vendedor" placeholder="Nombre del Vendedor"><br><br>
+    <label for="password-vendedor">Contraseña:</label>
+    <input type="password" id="password-vendedor" placeholder="Contraseña"><br><br>
+    <button onclick="iniciarSesionVendedor()">Iniciar Sesión</button>
+    <button onclick="cerrarVendedor()">Salir</button>
+</div>
+
+<div id="form-venta">
+    <h2>Registrar Venta</h2>
+    <label for="fecha-venta">Fecha de Venta:</label>
+    <input type="date" id="fecha-venta"><br><br>
+    <label for="fecha-instalacion">Fecha de Instalación:</label>
+    <input type="date" id="fecha-instalacion"><br><br>
+    <label for="compania">Compañía:</label>
+    <select id="compania">
+        <option value="Entel">Entel</option>
+        <option value="Movistar">Movistar</option>
+        <option value="Directv">Directv</option>
+        <option value="ADT">ADT</option>
+    </select><br><br>
+    <label for="servicios">Servicios:</label>
+    <input type="text" id="servicios" placeholder="Servicios Ofrecidos"><br><br>
+    <label for="instaladas">Cantidad Ventas:</label>
+    <input type="number" id="instaladas"><br><br>
+    <button onclick="document.getElementById('foto-venta').click();" style="background-color: #3498db; color: white;">Seleccionar Foto</button>
+<input type="file" id="foto-venta" accept="image/*" style="display: none;">
+    
+    <button onclick="agregarVenta()">Agregar Venta</button>
+    <button onclick="cerrarFormularioVenta()">Salir</button>
+    <h3>Ventas del Vendedor</h3>
+    <table id="tabla-ventas-vendedor">
+        <thead>
+            <tr>
+                <th>Fecha de Venta</th>
+<th>Fecha de Instalación</th>
+<th>Compañía</th>
+<th>Servicios</th>
+<th>Estado</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-ventas-vendedor-body"></tbody>
+    </table>
+</div>
+
+<script defer>
+    let db;
+    let vendedorActual = "";
+    let supervisorActivo = false;
+    let totalInstaladas = 0;
+    let totalRechazadas = 0;
+
+    const vendedorPassword = "1234";
+    const supervisorPassword = "admin123";
+
+    const request = indexedDB.open("ventasDB", 1);
+
+    request.onupgradeneeded = function (event) {
+        db = event.target.result;
+        const ventasStore = db.createObjectStore("ventas", { keyPath: "id", autoIncrement: true });
+        ventasStore.createIndex("nombreVendedor", "nombreVendedor", { unique: false });
+    };
+
+    request.onsuccess = function (event) {
+        db = event.target.result;
+        cargarVentas();
+    };
+
+    request.onerror = function () {
+        alert("Error al abrir la base de datos");
+    };
+
+    function activarVendedor() {
+        document.getElementById("bienvenida").style.display = "none";
+        document.getElementById("vendedor-content").style.display = "block";
+    }
+
+    function activarModoSupervisor() {
+        document.getElementById("bienvenida").style.display = "none";
+        document.getElementById("password-modal").style.display = "block";
+    }
+
+    function cerrarPasswordModal() {
+        document.getElementById("password-modal").style.display = "none";
+        document.getElementById("bienvenida").style.display = "block";
+    }
+
+    function verificarPasswordSupervisor() {
+        const password = document.getElementById("password-supervisor").value;
+        if (password === supervisorPassword) {
+            supervisorActivo = true;
+            document.getElementById("bienvenida").style.display = "none";
+            cerrarPasswordModal();
+            document.getElementById("supervisor-content").style.display = "block";
+            cargarVentas();
+        } else {
+            alert("Ooooo te equivocaste, vuelve a intentarlo");
+        }
+    }
+
+    function iniciarSesionVendedor() {
+        const nombre = document.getElementById("nombre-vendedor").value;
+        const password = document.getElementById("password-vendedor").value;
+        if (password === vendedorPassword) {
+            vendedorActual = nombre;
+            document.getElementById("vendedor-content").style.display = "none";
+            document.getElementById("form-venta").style.display = "block";
+            cargarVentas();
+        } else {
+            alert("Ooooo te equivocaste, vuelve a intentarlo");
+        }
+    }
+
+    function cerrarSupervisor() {
+        supervisorActivo = false;
+        document.getElementById("supervisor-content").style.display = "none";
+        document.getElementById("bienvenida").style.display = "block";
+    }
+
+    function cerrarVendedor() {
+        document.getElementById("vendedor-content").style.display = "none";
+        document.getElementById("bienvenida").style.display = "block";
+        document.getElementById("nombre-vendedor").value = "";
+        document.getElementById("password-vendedor").value = "";
+    }
+
+    function cerrarFormularioVenta() {
+        document.getElementById("form-venta").style.display = "none";
+        document.getElementById("bienvenida").style.display = "block";
+    }
+
+    function agregarVenta() {
+        const fechaVenta = document.getElementById("fecha-venta").value;
+        const fechaInstalacion = document.getElementById("fecha-instalacion").value;
+        const ventas = document.getElementById("instaladas").value;
+        let estado = "Enviado";
+
+        if (!fechaVenta || !fechaInstalacion || !ventas) {
+            alert("Por favor, complete todos los campos");
+            return;
+        }
+
+        const compania = document.getElementById("compania").value;
+        const servicios = document.getElementById("servicios").value;
+        const fotoVenta = document.getElementById("foto-venta").files[0];
+        let fotoURL = "";
+
+        if (fotoVenta) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                fotoURL = e.target.result;
+            };
+            reader.readAsDataURL(fotoVenta);
+        }
+
+        const nuevaVenta = { nombreVendedor: vendedorActual, fechaVenta, fechaInstalacion, compania, servicios, ventas, estado, foto: fotoURL };
+        const transaction = db.transaction(["ventas"], "readwrite");
+        const ventasStore = transaction.objectStore("ventas");
+        ventasStore.add(nuevaVenta);
+
+        transaction.oncomplete = function () {
+            alert("Venta registrada exitosamente");
+            cargarVentas();
+        };
+    }
+
+    function cargarVentas() {
+        const transaction = db.transaction(["ventas"], "readonly");
+        const ventasStore = transaction.objectStore("ventas");
+        const request = ventasStore.getAll();
+
+        request.onsuccess = function (event) {
+            const ventas = event.target.result;
+            let totalInstaladas = 0;
+            let totalRechazadas = 0;
+            const tablaSupervisor = document.getElementById("tabla-ventas-supervisor-body");
+            const tablaVendedor = document.getElementById("tabla-ventas-vendedor-body");
+            tablaSupervisor.innerHTML = "";
+            tablaVendedor.innerHTML = "";
+
+            ventas.forEach((venta) => {
+                if (venta.estado === "Instalado") totalInstaladas++;
+                if (venta.estado === "Rechazada") totalRechazadas++;
+                const fila = `<tr><td>${venta.fechaVenta}</td><td>${venta.fechaInstalacion}</td><td>${venta.compania}</td><td>${venta.servicios}</td><td>${venta.estado}</td><td>${venta.foto ? `<img src='${venta.foto}' alt='Foto Venta' style='width: 100px; height: auto;'>` : 'Sin foto'}</td><td>${supervisorActivo && venta.estado === 'Rechazada' ? `<button onclick='eliminarVenta(${venta.id})' class='btn-danger'>Eliminar</button>` : ''}</td></tr>`;
+                tablaSupervisor.innerHTML += fila;
+                if (venta.nombreVendedor === vendedorActual) {
+                    tablaVendedor.innerHTML += fila;
+                }
+            });
+
+            document.getElementById("total-instaladas").textContent = totalInstaladas;
+            document.getElementById("total-rechazadas").textContent = totalRechazadas;
+        };
+    }
+
+    function eliminarVenta(id) {
+        const transaction = db.transaction(["ventas"], "readwrite");
+        const ventasStore = transaction.objectStore("ventas");
+        ventasStore.delete(id).onsuccess = function () {
+            alert("Venta eliminada correctamente");
+            cargarVentas();
+        };
+    }
+function enviarMensaje() {
+        const ejecutivo = document.getElementById("ejecutivo-select").value;
+        const chatBox = document.getElementById("chat-box");
+        const mensaje = document.getElementById("chat-message").value;
+        if (mensaje.trim() !== "") {
+            const nuevoMensaje = document.createElement("p");
+            nuevoMensaje.textContent = `${ejecutivo}: ${mensaje}`;
+            chatBox.appendChild(nuevoMensaje);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            document.getElementById("chat-message").value = "";
+        }
+    }
+function toggleChat() {
+        const chatContainer = document.getElementById("chat-container");
+        if (chatContainer.style.display === "none") {
+            chatContainer.style.display = "block";
+        } else {
+            chatContainer.style.display = "none";
+        }
+    }
+</script>
+</body>
+</html>
